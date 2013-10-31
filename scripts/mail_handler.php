@@ -17,6 +17,7 @@ echo 'SERVER_NAME: ' . $options['SERVER_NAME'] . "\n";
 // for config and awl library -
 // used to solved by ../htdocs/always.php
 // Notice: Undefined index: SERVER_NAME in /home/milan/projects/davical/htdocs/always.php on line 138
+
 $_SERVER['SERVER_NAME'] = $options['SERVER_NAME'];
 require_once('../htdocs/always.php');
 
