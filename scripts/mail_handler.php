@@ -198,7 +198,6 @@ class MailInviteHandler {
         return true;
     }
 
-
     private function headersAddReplyTo($addParam = true){
         global $c;
         $result = '';
@@ -230,11 +229,11 @@ class MailInviteHandler {
 
 
 
+
         $attendeeWithoutMailTo = explode('mailto:', $attendee);
         if(count($attendeeWithoutMailTo) > 1){
             $attendee = $attendeeWithoutMailTo[1];
         }
-
 
 
         $result = mail($attendee, $title, $renderInvitation, $headers);
