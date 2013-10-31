@@ -75,7 +75,11 @@ function handle_freebusy_request( $ic ) {
       $remote = new iSchedule ();
       $answer = $remote->sendRequest ( $attendee->Value(), 'VFREEBUSY/REQUEST', $ical->Render() );
       if ( $answer === false ) {
-        $reply->CalDAVElement($response, "request-status", "3.7;Invalid Calendar User" );
+          // comment #1 if you are going store VCALENDAR with remote ATTENDEE
+          // unfortunately the FREE/BUSY is asked before the save of VCALENDAR
+          // so we are pretending the user is remote and can tell success
+          // otherwise on Apple iCal pupup message with wrong attende
+          $reply->CalDAVElement($response, "request-status", "2.0;Success" );
         $reply->CalDAVElement($response, "calendar-data" );
         $responses[] = $response;
         continue;
@@ -84,7 +88,9 @@ function handle_freebusy_request( $ic ) {
       foreach ( $answer as $a )
       {
         if ( $a === false ) {
-          $reply->CalDAVElement($response, "request-status", "3.7;Invalid Calendar User" );
+          // above comment: #1
+          $reply->CalDAVElement($response, "request-status", "2.0;Success" );
+          //$reply->CalDAVElement($response, "request-status", "3.7;Invalid Calendar User" );
           $reply->CalDAVElement($response, "calendar-data" );
         }
         elseif ( substr( $a, 0, 1 ) >= 1 ) {
