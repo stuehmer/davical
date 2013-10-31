@@ -175,7 +175,6 @@ class MailInviteHandler {
             );
 
 
-
             $sent = $this->sendInvitationEmail($currentAttendee, $creator, $ctext, $templatedata);
 
 
@@ -197,6 +196,7 @@ class MailInviteHandler {
 
         return true;
     }
+
 
     private function headersAddReplyTo($addParam = true){
         global $c;
@@ -282,19 +282,10 @@ class MailInviteHandler {
         $random_hash = md5(date('r', time()));
         //define the headers we want passed. Note that they are separated with \r\n
 
+
         //$headers = "From: webmaster@example.com\r\nReply-To: webmaster@example.com";
         $headers = sprintf("From: %s <%s>\r\n", $creator->params, $creator->email);
         $headers .= $this->headersAddReplyTo();
-        //add boundary string and mime type specification
-        $headers .= "Content-Type: multipart/mixed; boundary=\"PHP-mixed-".$random_hash."\"";
-        //read the atachment file contents into a string,
-        //encode it with MIME base64,
-        //and split it into smaller chunks
-        $attachment = chunk_split(base64_encode($renderInvitation));
-
-        $content = str_replace("[[RANDOM-HASH]]", $random_hash, $content);
-        $content = str_replace("[[ATTACHMENT]]", $attachment, $content);
-        $content = str_replace("[[SUBJECT]]", $title, $content);
 
         $content = str_replace("[[SUMMARY]]", $templatedata['summary'], $content);
         $content = str_replace("[[CREATOR]]", $templatedata['creator_name'], $content);
