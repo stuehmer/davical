@@ -3,10 +3,30 @@ ini_set('display_errors', 'On');
 error_reporting(E_ALL);
 
 // for config and awl library -
-require_once('/home/milan/projects/awl/inc/AwlQuery.php');
+// used to solved by ../htdocs/always.php
+// Notice: Undefined index: SERVER_NAME in /home/milan/projects/davical/htdocs/always.php on line 138
+// require_once('../htdocs/always.php');
+
+// so copy code from always.php
+$try_paths = array(
+    '../../awl/inc'
+    ,'../../../awl/inc'
+, '/usr/share/awl/inc'        // Where it ends up on Debian
+, '/usr/share/php/awl/inc'    // Fedora's standard for PHP libraries
+, '/usr/local/share/awl/inc'
+);
+foreach( $try_paths AS $awl_include_path ) {
+    if ( @file_exists($awl_include_path.'/AWLUtilities.php') ) {
+        echo $awl_include_path;
+        set_include_path( $awl_include_path. PATH_SEPARATOR. get_include_path());
+        break;
+    }
+}
+
+require_once('AwlQuery.php');
+require_once('vCalendar.php');
+
 require_once('../config/config.php');
-//require_once('../htdocs/always.php');
-require_once('/home/milan/projects/awl/inc/vCalendar.php');
 require_once('../inc/PlancakeEmailParser.php');
 require_once('../inc/Consts.php');
 
