@@ -2,8 +2,10 @@
 ini_set('display_errors', 'On');
 error_reporting(E_ALL);
 
-// for config and awl library - require_once('/home/milan/projects/awl/inc/AwlQuery.php'); require_once('../config/config.php');
-require_once('../htdocs/always.php');
+// for config and awl library -
+require_once('/home/milan/projects/awl/inc/AwlQuery.php');
+require_once('../config/config.php');
+//require_once('../htdocs/always.php');
 require_once('/home/milan/projects/awl/inc/vCalendar.php');
 require_once('../inc/PlancakeEmailParser.php');
 require_once('../inc/Consts.php');
