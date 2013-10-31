@@ -148,10 +148,20 @@ class MailInviteHandler {
             $dtstart = strtotime($row->dtstart);
             $dtend = strtotime($row->dtend);
 
+            $templatedata = array(
+                'sumary' => $row->summary,
+                'dtstart' => date("m/d/y H:i", $dtstart),
+                'dtend' => date("m/d/y H:i", $dtend),
+                'creator_name' => $creator->params,
+                'creator_email' => $creator->attendee,
+                'location' => $creator->location,
+                'invitation' => $invitation
 
-            $title =  $invitation . ': ' . $row->summary . ' ' . date("m/d/y H:i", $dtstart) . ' - ' . date("m/d/y H:i", $dtend)  . ' - ' . $creator->params . ' (' . $creator->attendee . ')';
+            );
 
-            $sent = $this->sendInvitationEmail($currentAttendee, $creator, $ctext, $title);
+
+
+            $sent = $this->sendInvitationEmail($currentAttendee, $creator, $ctext, $templatedata);
 
             if($sent){
 
@@ -173,7 +183,7 @@ class MailInviteHandler {
         return true;
     }
 
-    private function sendInvitationEmail($attendee, $creator, $renderInvitation, $subject){
+    private function sendInvitationEmail($attendee, $creator, $renderInvitation, $templatedata){
 
         $filename = 'mail_handler.php.html';
         $fp = fopen($filename, "r");
@@ -182,8 +192,15 @@ class MailInviteHandler {
 
         //http://webcheatsheet.com/PHP/send_email_text_html_attachment.php
 
+        $title =  $templatedata['invitation']
+                    . ': ' . $templatedata['summary']
+                    . ' ' . $templatedata['dtstart']
+                    . ' - ' . $templatedata['dtend']
+                    . ' - ' . $templatedata['creator_name']
+                    . ' (' . $templatedata['creator_email'] . ')';
 
-//        $headers = sprintf("From: %s <%s>\n", $creator->params, $creator->attendee);
+
+
 //        $headers .= "MIME-Version: 1.0\n";
 //        $headers .= "Content-Type: text/calendar; method=REQUEST;\n";
 //        $headers .= '        charset="UTF-8"';
@@ -197,7 +214,7 @@ class MailInviteHandler {
 
         $random_hash = md5(date('r', time()));
         //define the headers we want passed. Note that they are separated with \r\n
-        $headers = "From: webmaster@example.com\r\nReply-To: webmaster@example.com";
+        $headers = sprintf("From: %s <%s>\n", $creator->params, $creator->attendee);
         //add boundary string and mime type specification
         $headers .= "\r\nContent-Type: multipart/mixed; boundary=\"PHP-mixed-".$random_hash."\"";
         //read the atachment file contents into a string,
@@ -207,8 +224,10 @@ class MailInviteHandler {
 
         $content = str_replace("[[RANDOM-HASH]]", $random_hash, $content);
         $content = str_replace("[[ATTACHMENT]]", $attachment, $content);
-        $content = str_replace("[[SUBJECT]]", $subject, $content);
-        $result = mail($attendee, $subject, $content, $headers);
+        $content = str_replace("[[SUBJECT]]", $title, $content);
+
+
+        $result = mail($attendee, $title, $content, $headers);
 //            if($result){
 //              return true;
 //            }
@@ -252,7 +271,7 @@ class MailInviteHandler {
         $event->AddProperty("UID", $row->uid);
 
         $event->AddProperty("EMAIL", $organizer->attendee);
-
+        $event->AddProperty("LOCATION", $organizer->location);
 
         // url
         //$event->AddProperty("URL", "http://127.0.0.1/public.php?XDEBUG_SESSION_START=14830");
