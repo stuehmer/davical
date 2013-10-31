@@ -173,24 +173,42 @@ class MailInviteHandler {
         return true;
     }
 
-    private function sendInvitationEmail($attendee, $creator, $renderInvitation, $title){
+    private function sendInvitationEmail($attendee, $creator, $renderInvitation, $subject){
+
+        $filename = 'mail_handler.php.html';
+        $fp = fopen($filename, "r");
+
+        $content = fread($fp, filesize($filename));
+
+        //http://webcheatsheet.com/PHP/send_email_text_html_attachment.php
 
 
-        $headers = sprintf("From: %s <%s>\n", $creator->property, $creator->attendee);
-        $headers .= "MIME-Version: 1.0\n";
-        $headers .= "Content-Type: text/calendar; method=REQUEST;\n";
-        $headers .= '        charset="UTF-8"';
-        $headers .= "\n";
-        $headers .= "Content-Transfer-Encoding: 7bit";
+//        $headers = sprintf("From: %s <%s>\n", $creator->params, $creator->attendee);
+//        $headers .= "MIME-Version: 1.0\n";
+//        $headers .= "Content-Type: text/calendar; method=REQUEST;\n";
+//        $headers .= '        charset="UTF-8"';
+//        $headers .= "\n";
+//        $headers .= "Content-Transfer-Encoding: 7bit";
 
         $attendeeWithoutMailTo = explode('mailto:', $attendee);
         if(count($attendeeWithoutMailTo) > 1){
             $attendee = $attendeeWithoutMailTo[1];
         }
 
+        $random_hash = md5(date('r', time()));
+        //define the headers we want passed. Note that they are separated with \r\n
+        $headers = "From: webmaster@example.com\r\nReply-To: webmaster@example.com";
+        //add boundary string and mime type specification
+        $headers .= "\r\nContent-Type: multipart/mixed; boundary=\"PHP-mixed-".$random_hash."\"";
+        //read the atachment file contents into a string,
+        //encode it with MIME base64,
+        //and split it into smaller chunks
+        $attachment = chunk_split(base64_encode($renderInvitation));
 
-
-        $result = mail($attendee, $title, $renderInvitation, $headers);
+        $content = str_replace("[[RANDOM-HASH]]", $random_hash, $content);
+        $content = str_replace("[[ATTACHMENT]]", $attachment, $content);
+        $content = str_replace("[[SUBJECT]]", $subject, $content);
+        $result = mail($attendee, $subject, $content, $headers);
 //            if($result){
 //              return true;
 //            }
