@@ -281,18 +281,16 @@ class MailInviteHandler {
 
         $random_hash = md5(date('r', time()));
         //define the headers we want passed. Note that they are separated with \r\n
-
-
         //$headers = "From: webmaster@example.com\r\nReply-To: webmaster@example.com";
         $headers = sprintf("From: %s <%s>\r\n", $creator->params, $creator->email);
         $headers .= $this->headersAddReplyTo();
+
 
         $content = str_replace("[[SUMMARY]]", $templatedata['summary'], $content);
         $content = str_replace("[[CREATOR]]", $templatedata['creator_name'], $content);
         $content = str_replace("[[EMAIL]]", $templatedata['creator_email'], $content);
         $content = str_replace("[[DTSTART]]", $templatedata['dtstart'], $content);
         $content = str_replace("[[DTEND]]", $templatedata['dtend'], $content);
-
 
         if($templatedata['location'] != '') {
             $templatedata['location'] = 'Location : ' . $templatedata['location'];
