@@ -434,7 +434,11 @@ function do_scheduling_reply( vCalendar $resource, vProperty $organizer ) {
     $schedule_request->AddProperty('METHOD', 'REQUEST');
 
     $schedule_target = new Principal('email',$email);
-    $response = '3.7'; // Attendee was not found on server.
+
+    // Attendee was not found on server.
+    // *please NOTE:
+    // but we can pretend the attendee is not a principal but a remote-attendee
+    $response = '2.0;Success';
     if ( $schedule_target->Exists() ) {
       // Instead of always writing to schedule-default-calendar, we first try to
       // find a calendar with an existing instance of the event in any calendar of this attendee.
@@ -560,7 +564,7 @@ function do_scheduling_requests( vCalendar $resource, $create, $old_data = null,
 
     $response = '3.7';  // Attendee was not found on server.
     dbg_error_log( 'PUT', 'Handling scheduling resources for %s on %s which is %s', $email,
-                     ($create?'create':'update'), ($attendee_is_new? 'new' : 'an update') );
+                     ($create?'create':'update'), ($Fattendee_is_new? 'new' : 'an update') );
     if ( $schedule_target->Exists() ) {
       // Instead of always writing to schedule-default-calendar, we first try to
       // find a calendar with an existing instance of the event.
@@ -605,7 +609,12 @@ function do_scheduling_requests( vCalendar $resource, $create, $old_data = null,
     else if($remoteAttendee){
         $attendee->is_remote = true;
         $remote = new iSchedule ();
+
+
         $answer = $remote->sendRequest ( $email, 'VEVENT/REQUEST', $schedule_request->Render() );
+
+        // change response for remote attendee
+        $response='2.0;Success';
     }
     else {
       $remote = new iSchedule ();
