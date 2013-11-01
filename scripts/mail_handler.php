@@ -149,7 +149,7 @@ class MailInviteHandler {
             $dtend = strtotime($row->dtend);
 
             $templatedata = array(
-                'sumary' => $row->summary,
+                'summary' => $row->summary,
                 'dtstart' => date("m/d/y H:i", $dtstart),
                 'dtend' => date("m/d/y H:i", $dtend),
                 'creator_name' => $creator->params,
@@ -214,7 +214,9 @@ class MailInviteHandler {
 
         $random_hash = md5(date('r', time()));
         //define the headers we want passed. Note that they are separated with \r\n
-        $headers = sprintf("From: %s <%s>\n", $creator->params, $creator->attendee);
+
+        $headers = "From: webmaster@example.com\r\nReply-To: webmaster@example.com";
+        $headers = sprintf("From: %s\r\nReply-To: %s", $creator->params, $creator->attendee);
         //add boundary string and mime type specification
         $headers .= "\r\nContent-Type: multipart/mixed; boundary=\"PHP-mixed-".$random_hash."\"";
         //read the atachment file contents into a string,
@@ -225,6 +227,13 @@ class MailInviteHandler {
         $content = str_replace("[[RANDOM-HASH]]", $random_hash, $content);
         $content = str_replace("[[ATTACHMENT]]", $attachment, $content);
         $content = str_replace("[[SUBJECT]]", $title, $content);
+
+        $content = str_replace("[[SUMMARY]]", $templatedata['summary'], $content);
+        $content = str_replace("[[CREATOR]]", $templatedata['creator_name'], $content);
+        $content = str_replace("[[EMAIL]]", $templatedata['creator_email'], $content);
+        $content = str_replace("[[DTSTART]]", $templatedata['dtstart'], $content);
+        $content = str_replace("[[DTEND]]", $templatedata['dtend'], $content);
+        $content = str_replace("[[LOCATION]]", $templatedata['location'], $content);
 
 
         $result = mail($attendee, $title, $content, $headers);

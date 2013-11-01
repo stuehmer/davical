@@ -5,9 +5,34 @@ Content-Type: multipart/alternative; boundary="PHP-alt-[[RANDOM-HASH]]"
 Content-Type: text/html; charset="utf-8"
 Content-Transfer-Encoding: 7bit
 
-<h1>[[SUBJECT]]</h1>
-<p>This is something with <b>HTML</b> formatting.</p>
+<!-- ************************************************** -->
+<!-- TEMPLATE START                                     -->
+<!-- **not change anything by hand above this comment   -->
 
+
+<h1>[[SUBJECT]]</h1>
+
+<h2 style="background-color:#cccccc">[[SUMMARY]]</h2>
+        <div style="border-left-color: #cccccc; border-left-width:1px; border-left-style:solid; border-right-color: #cccccc; border-right-width:1px;border-right-style:solid;padding:10px">
+            Creator: [[CREATOR]] ([[EMAIL]])<br/>
+            Date start: [[DTSTART]]<br/>
+            Date end: [[DTEND]]<br/>
+            Location: [[LOCATION]]<br/>
+        </div>
+
+<div style="font-size:10px; background-color:#cccccc">
+    <a href="http://davical.org/">
+        <img alt="" src="data:image/png;base64,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" />
+    </a>
+    <a href="http://davical.org/">http://davical.org</a>
+</div>
+
+
+
+
+<!-- TEMPLATE START                                     -->
+<!-- **not change anything by hand below this comment   -->
+<!-- ************************************************** -->
 
 --PHP-mixed-[[RANDOM-HASH]]
 Content-Type: application/ics; name="invitation.ics"
