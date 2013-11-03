@@ -23,6 +23,8 @@ foreach( $try_paths AS $awl_include_path ) {
     }
 }
 
+$use_template = false;
+
 require_once('AwlQuery.php');
 require_once('vCalendar.php');
 
@@ -164,9 +166,6 @@ class MailInviteHandler {
             $sent = $this->sendInvitationEmail($currentAttendee, $creator, $ctext, $templatedata);
 
             if($sent){
-
-
-
                 $this->changeRemoteAttendeeStatrusTo($currentAttendee, $currentDavID, $new_status);
             }
         }
@@ -183,22 +182,56 @@ class MailInviteHandler {
         return true;
     }
 
+
+
+    private function sendInvitationEmailNoTemplate($attendee, $creator, $renderInvitation, $title){
+
+
+        $headers = sprintf("From: %s <%s>\n", $creator->property, $creator->attendee);
+        $headers .= "MIME-Version: 1.0\n";
+        $headers .= "Content-Type: text/calendar; method=REQUEST;\n";
+        $headers .= '        charset="UTF-8"';
+        $headers .= "\n";
+        $headers .= "Content-Transfer-Encoding: 7bit";
+
+        $attendeeWithoutMailTo = explode('mailto:', $attendee);
+        if(count($attendeeWithoutMailTo) > 1){
+            $attendee = $attendeeWithoutMailTo[1];
+        }
+
+
+
+        $result = mail($attendee, $title, $renderInvitation, $headers);
+//            if($result){
+//              return true;
+//            }
+
+        return true;
+    }
+
+
+
     private function sendInvitationEmail($attendee, $creator, $renderInvitation, $templatedata){
+        global $use_template;
+        //http://webcheatsheet.com/PHP/send_email_text_html_attachment.php
+
+        $title = $templatedata['invitation']
+            . ': ' . $templatedata['summary']
+            . ' ' . $templatedata['dtstart']
+            . ' - ' . $templatedata['dtend']
+            . ' - ' . $templatedata['creator_name']
+            . ' (' . $templatedata['creator_email'] . ')';
+
+        if($use_template == false){
+           return $this->sendInvitationEmailNoTemplate($attendee, $creator, $renderInvitation, $title);
+        }
+
+        echo $use_template;
 
         $filename = 'mail_handler.php.html';
         $fp = fopen($filename, "r");
 
         $content = fread($fp, filesize($filename));
-
-        //http://webcheatsheet.com/PHP/send_email_text_html_attachment.php
-
-        $title =  $templatedata['invitation']
-                    . ': ' . $templatedata['summary']
-                    . ' ' . $templatedata['dtstart']
-                    . ' - ' . $templatedata['dtend']
-                    . ' - ' . $templatedata['creator_name']
-                    . ' (' . $templatedata['creator_email'] . ')';
-
 
 
 //        $headers .= "MIME-Version: 1.0\n";
