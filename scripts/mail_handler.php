@@ -150,8 +150,8 @@ class MailInviteHandler {
 
             $templatedata = array(
                 'summary' => $row->summary,
-                'dtstart' => date("m/d/y H:i", $dtstart),
-                'dtend' => date("m/d/y H:i", $dtend),
+                'dtstart' => date("d/m/y H:i", $dtstart),
+                'dtend' => date("d/m/y H:i", $dtend),
                 'creator_name' => $creator->params,
                 'creator_email' => $creator->attendee,
                 'location' => $creator->location,
@@ -236,6 +236,8 @@ class MailInviteHandler {
         $content = str_replace("[[LOCATION]]", $templatedata['location'], $content);
 
 
+        echo $attendee;
+        echo $headers;
         $result = mail($attendee, $title, $content, $headers);
 //            if($result){
 //              return true;
