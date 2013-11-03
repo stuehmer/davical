@@ -298,9 +298,9 @@ class MailInviteHandler {
 
         $content = str_replace("[[LOCATION]]", $templatedata['location'], $content);
 
-
         echo "\nattendee:${attendee}]\n";
         echo "\nheaders:${headers}]\n";
+
         $result = mail($attendee, $title, $content, $headers);
         if($result){
           return true;
