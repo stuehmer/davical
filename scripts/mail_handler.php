@@ -28,6 +28,8 @@ require_once('../htdocs/always.php');
  * $c->MailHandler['Reply-To'] = 'invitation_email_handler@example.com';
  */
 
+$use_template = false;
+
 require_once('AwlQuery.php');
 require_once('vCalendar.php');
 require_once('../inc/PlancakeEmailParser.php');
@@ -174,9 +176,7 @@ class MailInviteHandler {
                 'location' => $row->location
             );
 
-
             $sent = $this->sendInvitationEmail($currentAttendee, $creator, $ctext, $templatedata);
-
 
             global $options;
             print_r($options['save-sent-invitation']);
@@ -260,7 +260,6 @@ class MailInviteHandler {
         if(!array_key_exists('template', $c->MailHandler) || !$c->MailHandler['template']){
            return $this->sendInvitationEmailNoTemplate($attendee, $creator, $renderInvitation, $title);
         }
-
 
         $filename = 'mail_handler.php.html';
         $fp = fopen($filename, "r");
