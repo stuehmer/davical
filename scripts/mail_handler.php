@@ -213,16 +213,12 @@ class MailInviteHandler {
     private function sendInvitationEmailNoTemplate($attendee, $creator, $renderInvitation, $title){
 
         $headers = sprintf("From: %s <%s>\r\n", $creator->params, $creator->email);
-
         $headers .= $this->headersAddReplyTo();
         $headers .= "MIME-Version: 1.0\r\n";
         $headers .= "Content-Type: text/calendar; method=REQUEST;\r\n";
         $headers .= '        charset="UTF-8"';
         $headers .= "\r\n";
         $headers .= "Content-Transfer-Encoding: 7bit";
-
-
-
 
         $attendeeWithoutMailTo = explode('mailto:', $attendee);
         if(count($attendeeWithoutMailTo) > 1){
@@ -278,10 +274,11 @@ class MailInviteHandler {
         $headers = sprintf("From: %s <%s>\r\n", $creator->params, $creator->email);
         $headers .= $this->headersAddReplyTo();
 
-        $headers = "From: webmaster@example.com\r\nReply-To: webmaster@example.com";
-        $headers = sprintf("From: %s\r\nReply-To: %s", $creator->params, $creator->email);
+        //$headers = "From: webmaster@example.com\r\nReply-To: webmaster@example.com";
+        $headers = sprintf("From: %s <%s>\r\n", $creator->params, $creator->email);
+        $headers .= $this->headersAddReplyTo();
         //add boundary string and mime type specification
-        $headers .= "\r\nContent-Type: multipart/mixed; boundary=\"PHP-mixed-".$random_hash."\"";
+        $headers .= "Content-Type: multipart/mixed; boundary=\"PHP-mixed-".$random_hash."\"";
         //read the atachment file contents into a string,
         //encode it with MIME base64,
         //and split it into smaller chunks
@@ -566,7 +563,6 @@ class MailInviteHandler {
 //var_dump($options);
 
 // default config setting for MailHandler
-
 if(!property_exists($c, 'MailHandler')){
     echo 'default property MailHandler in $c...\n';
     $c->MailHandler = array();
