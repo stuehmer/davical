@@ -5,30 +5,14 @@ error_reporting(E_ALL);
 // for config and awl library -
 // used to solved by ../htdocs/always.php
 // Notice: Undefined index: SERVER_NAME in /home/milan/projects/davical/htdocs/always.php on line 138
-// require_once('../htdocs/always.php');
+$_SERVER['SERVER_NAME'] = 'what_happend_when_server_name_is_a_buch_of_words';
+require_once('../htdocs/always.php');
 
-// so copy code from always.php
-$try_paths = array(
-    '../../awl/inc'
-    ,'../../../awl/inc'
-, '/usr/share/awl/inc'        // Where it ends up on Debian
-, '/usr/share/php/awl/inc'    // Fedora's standard for PHP libraries
-, '/usr/local/share/awl/inc'
-);
-foreach( $try_paths AS $awl_include_path ) {
-    if ( @file_exists($awl_include_path.'/AWLUtilities.php') ) {
-        echo $awl_include_path;
-        set_include_path( $awl_include_path. PATH_SEPARATOR. get_include_path());
-        break;
-    }
-}
 
-$use_template = true;
 
 require_once('AwlQuery.php');
 require_once('vCalendar.php');
 
-require_once('../config/config.php');
 require_once('../inc/PlancakeEmailParser.php');
 require_once('../inc/Consts.php');
 
@@ -212,7 +196,7 @@ class MailInviteHandler {
 
 
     private function sendInvitationEmail($attendee, $creator, $renderInvitation, $templatedata){
-        global $use_template;
+        global $c;
         //http://webcheatsheet.com/PHP/send_email_text_html_attachment.php
 
         $title = $templatedata['invitation']
@@ -222,11 +206,10 @@ class MailInviteHandler {
 //            . ' - ' . $templatedata['creator_name']
 //            . ' (' . $templatedata['creator_email'] . ')';
 
-        if($use_template == false){
+        if(!array_key_exists($c->MailHandler, 'template') || !$c->MailHandler->template){
            return $this->sendInvitationEmailNoTemplate($attendee, $creator, $renderInvitation, $title);
         }
 
-        echo $use_template;
 
         $filename = 'mail_handler.php.html';
         $fp = fopen($filename, "r");
@@ -516,6 +499,10 @@ class MailInviteHandler {
 $options = options($argv);
 //var_dump($options);
 
+// default config setting for MailHandler
+if(array_key_exists('MailHandler', $c)){
+    $c->MailHandler = (object)array();
+}
 
 if(count($options) > 0){
     $mailHandler = new MailInviteHandler();
