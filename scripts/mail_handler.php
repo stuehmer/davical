@@ -170,16 +170,30 @@ class MailInviteHandler {
     }
 
 
+    private function headersAddReplyTo(){
+        global $c;
+
+        if(array_key_exists('Reply-To', $c->MailHandler)){
+            return 'Reply-To: ' . $c->MailHandler['Reply-To'] . " \r\n";
+        }
+
+        return '';
+    }
 
     private function sendInvitationEmailNoTemplate($attendee, $creator, $renderInvitation, $title){
 
 
-        $headers = sprintf("From: %s <%s>\n", $creator->property, $creator->email);
-        $headers .= "MIME-Version: 1.0\n";
-        $headers .= "Content-Type: text/calendar; method=REQUEST;\n";
+        $headers = sprintf("From: %s <%s>\r\n", $creator->params, $creator->email);
+
+        $headers .= $this->headersAddReplyTo();
+        $headers .= "MIME-Version: 1.0\r\n";
+        $headers .= "Content-Type: text/calendar; method=REQUEST;\r\n";
         $headers .= '        charset="UTF-8"';
-        $headers .= "\n";
+        $headers .= "\r\n";
         $headers .= "Content-Transfer-Encoding: 7bit";
+
+
+        echo "HEADER>>\n" . $headers . "\n<<<";
 
         $attendeeWithoutMailTo = explode('mailto:', $attendee);
         if(count($attendeeWithoutMailTo) > 1){
@@ -209,7 +223,7 @@ class MailInviteHandler {
 //            . ' - ' . $templatedata['creator_name']
 //            . ' (' . $templatedata['creator_email'] . ')';
 
-        if(!array_key_exists($c->MailHandler, 'template') || !$c->MailHandler->template){
+        if(!array_key_exists('template', $c->MailHandler) || !$c->MailHandler['template']){
            return $this->sendInvitationEmailNoTemplate($attendee, $creator, $renderInvitation, $title);
         }
 
@@ -234,10 +248,11 @@ class MailInviteHandler {
         $random_hash = md5(date('r', time()));
         //define the headers we want passed. Note that they are separated with \r\n
 
-        $headers = "From: webmaster@example.com\r\nReply-To: webmaster@example.com";
-        $headers = sprintf("From: %s\r\nReply-To: %s", $creator->params, $creator->email);
+        //$headers = "From: webmaster@example.com\r\nReply-To: webmaster@example.com";
+        $headers = sprintf("From: %s <%s>\r\n", $creator->params, $creator->email);
+        $headers .= $this->headersAddReplyTo();
         //add boundary string and mime type specification
-        $headers .= "\r\nContent-Type: multipart/mixed; boundary=\"PHP-mixed-".$random_hash."\"";
+        $headers .= "Content-Type: multipart/mixed; boundary=\"PHP-mixed-".$random_hash."\"";
         //read the atachment file contents into a string,
         //encode it with MIME base64,
         //and split it into smaller chunks
@@ -503,8 +518,9 @@ $options = options($argv);
 //var_dump($options);
 
 // default config setting for MailHandler
-if(array_key_exists('MailHandler', $c)){
-    $c->MailHandler = (object)array();
+if(!property_exists($c, 'MailHandler')){
+    echo 'default property MailHandler in $c...\n';
+    $c->MailHandler = array();
 }
 
 if(count($options) > 0){
