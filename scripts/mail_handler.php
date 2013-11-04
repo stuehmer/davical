@@ -17,7 +17,6 @@ echo 'SERVER_NAME: ' . $options['SERVER_NAME'] . "\n";
 // for config and awl library -
 // used to solved by ../htdocs/always.php
 // Notice: Undefined index: SERVER_NAME in /home/milan/projects/davical/htdocs/always.php on line 138
-
 $_SERVER['SERVER_NAME'] = $options['SERVER_NAME'];
 require_once('../htdocs/always.php');
 
@@ -27,9 +26,6 @@ require_once('../htdocs/always.php');
  * $c->MailHandler['template'] = true;
  * $c->MailHandler['Reply-To'] = 'invitation_email_handler@example.com';
  */
-
-$use_template = true;
-
 require_once('AwlQuery.php');
 require_once('vCalendar.php');
 require_once('../inc/PlancakeEmailParser.php');
@@ -571,6 +567,7 @@ class MailInviteHandler {
 //var_dump($options);
 
 // default config setting for MailHandler
+
 if(!property_exists($c, 'MailHandler')){
     echo 'default property MailHandler in $c...\n';
     $c->MailHandler = array();
@@ -591,7 +588,6 @@ if(!property_exists($c, 'MailHandler')){
  *
  *          --save-sent-invitation=false/true - default true, after send invitation is stored in db and no send more
  */
-
 if(count($options) > 0){
     $mailHandler = new MailInviteHandler();
 
