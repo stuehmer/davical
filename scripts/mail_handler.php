@@ -23,7 +23,7 @@ foreach( $try_paths AS $awl_include_path ) {
     }
 }
 
-$use_template = false;
+$use_template = true;
 
 require_once('AwlQuery.php');
 require_once('vCalendar.php');
@@ -114,15 +114,15 @@ class MailInviteHandler {
             //$partstat = $row->partstat;
 
 
-            $sqlattendee = 'SELECT email as attendee, usr.fullname as params, NULL as partstat, TRUE as creator FROM usr WHERE usr.user_no = :user_no'
+            $sqlattendee = 'SELECT email, usr.fullname as params, NULL as partstat, TRUE as creator FROM usr WHERE usr.user_no = :user_no'
                 . ' UNION '
-                . 'SELECT attendee, params, partstat, FALSE as creator FROM calendar_attendee WHERE calendar_attendee.dav_id = :dav_id'
+                . 'SELECT attendee as email, params, partstat, FALSE as creator FROM calendar_attendee WHERE calendar_attendee.dav_id = :dav_id'
                 . ' ORDER BY creator DESC';
 
             $qryattendee = new AwlQuery($sqlattendee);
             $qryattendee->Bind(':user_no', $row->user_no);
             $qryattendee->Bind(':dav_id', $currentDavID);
-            $qryattendee->Exec('attendess');
+            $qryattendee->Exec('attendees');
 
             $attendees = array();
             while(($rowattendee = $qryattendee->Fetch())){
@@ -155,7 +155,7 @@ class MailInviteHandler {
                 'dtstart' => date("d/m/y H:i", $dtstart),
                 'dtend' => date("d/m/y H:i", $dtend),
                 'creator_name' => $creator->params,
-                'creator_email' => $creator->attendee,
+                'creator_email' => $creator->email,
                 'location' => $creator->location,
                 'invitation' => $invitation
 
@@ -165,9 +165,9 @@ class MailInviteHandler {
 
             $sent = $this->sendInvitationEmail($currentAttendee, $creator, $ctext, $templatedata);
 
-            if($sent){
-                $this->changeRemoteAttendeeStatrusTo($currentAttendee, $currentDavID, $new_status);
-            }
+//            if($sent){
+//                $this->changeRemoteAttendeeStatrusTo($currentAttendee, $currentDavID, $new_status);
+//            }
         }
 
     }
@@ -187,7 +187,7 @@ class MailInviteHandler {
     private function sendInvitationEmailNoTemplate($attendee, $creator, $renderInvitation, $title){
 
 
-        $headers = sprintf("From: %s <%s>\n", $creator->property, $creator->attendee);
+        $headers = sprintf("From: %s <%s>\n", $creator->property, $creator->email);
         $headers .= "MIME-Version: 1.0\n";
         $headers .= "Content-Type: text/calendar; method=REQUEST;\n";
         $headers .= '        charset="UTF-8"';
@@ -216,11 +216,11 @@ class MailInviteHandler {
         //http://webcheatsheet.com/PHP/send_email_text_html_attachment.php
 
         $title = $templatedata['invitation']
-            . ': ' . $templatedata['summary']
-            . ' ' . $templatedata['dtstart']
-            . ' - ' . $templatedata['dtend']
-            . ' - ' . $templatedata['creator_name']
-            . ' (' . $templatedata['creator_email'] . ')';
+            . ': ' . $templatedata['summary'];
+//            . ' ' . $templatedata['dtstart']
+//            . ' - ' . $templatedata['dtend']
+//            . ' - ' . $templatedata['creator_name']
+//            . ' (' . $templatedata['creator_email'] . ')';
 
         if($use_template == false){
            return $this->sendInvitationEmailNoTemplate($attendee, $creator, $renderInvitation, $title);
@@ -249,7 +249,7 @@ class MailInviteHandler {
         //define the headers we want passed. Note that they are separated with \r\n
 
         $headers = "From: webmaster@example.com\r\nReply-To: webmaster@example.com";
-        $headers = sprintf("From: %s\r\nReply-To: %s", $creator->params, $creator->attendee);
+        $headers = sprintf("From: %s\r\nReply-To: %s", $creator->params, $creator->email);
         //add boundary string and mime type specification
         $headers .= "\r\nContent-Type: multipart/mixed; boundary=\"PHP-mixed-".$random_hash."\"";
         //read the atachment file contents into a string,
@@ -269,8 +269,8 @@ class MailInviteHandler {
         $content = str_replace("[[LOCATION]]", $templatedata['location'], $content);
 
 
-        echo $attendee;
-        echo $headers;
+        echo "\nattendee:${attendee}]\n";
+        echo "\nheaders:${headers}]\n";
         $result = mail($attendee, $title, $content, $headers);
 //            if($result){
 //              return true;
@@ -314,7 +314,7 @@ class MailInviteHandler {
         $event->AddProperty("DTEND", $row->dtend);
         $event->AddProperty("UID", $row->uid);
 
-        $event->AddProperty("EMAIL", $organizer->attendee);
+
         $event->AddProperty("LOCATION", $organizer->location);
 
         // url
@@ -327,7 +327,7 @@ class MailInviteHandler {
             $organizerproperty = array( 'CN' => $organizer->params);
         }
 
-        $event->AddProperty("ORGANIZER", 'mailto:'. $organizer->attendee, $organizerproperty);
+        $event->AddProperty("ORGANIZER", 'mailto:'. $organizer->email, $organizerproperty);
 
         $event->AddProperty("STATUS", $status);
 
@@ -339,7 +339,7 @@ class MailInviteHandler {
             // add partstat from DB
             $attendeePropertyArray['PARTSTAT'] = $partstat;
 
-            $event->AddProperty("ATTENDEE", $attendee->attendee, $attendeePropertyArray );
+            $event->AddProperty("ATTENDEE", $attendee->email, $attendeePropertyArray );
         }
 
 
