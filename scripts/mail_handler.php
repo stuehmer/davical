@@ -149,7 +149,6 @@ class MailInviteHandler {
             $ctext = $this->renderRowToInvitation($row->caldav_data, $creator, $attendees);
 
             //$ctext = $row->caldav_data;
-
             $invitation = 'Invitation';
             // waiting mail already sent
             if($row->email_status == EMAIL_STATUS::WAITING_FOR_INVITATION_EMAIL){
