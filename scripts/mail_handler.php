@@ -28,7 +28,7 @@ require_once('../htdocs/always.php');
  * $c->MailHandler['Reply-To'] = 'invitation_email_handler@example.com';
  */
 
-$use_template = false;
+$use_template = true;
 
 require_once('AwlQuery.php');
 require_once('vCalendar.php');
@@ -217,7 +217,6 @@ class MailInviteHandler {
 
     private function sendInvitationEmailNoTemplate($attendee, $creator, $renderInvitation, $title){
 
-
         $headers = sprintf("From: %s <%s>\r\n", $creator->params, $creator->email);
 
         $headers .= $this->headersAddReplyTo();
@@ -284,6 +283,18 @@ class MailInviteHandler {
         $headers = sprintf("From: %s <%s>\r\n", $creator->params, $creator->email);
         $headers .= $this->headersAddReplyTo();
 
+        $headers = "From: webmaster@example.com\r\nReply-To: webmaster@example.com";
+        $headers = sprintf("From: %s\r\nReply-To: %s", $creator->params, $creator->email);
+        //add boundary string and mime type specification
+        $headers .= "\r\nContent-Type: multipart/mixed; boundary=\"PHP-mixed-".$random_hash."\"";
+        //read the atachment file contents into a string,
+        //encode it with MIME base64,
+        //and split it into smaller chunks
+        $attachment = chunk_split(base64_encode($renderInvitation));
+
+        $content = str_replace("[[RANDOM-HASH]]", $random_hash, $content);
+        $content = str_replace("[[ATTACHMENT]]", $attachment, $content);
+        $content = str_replace("[[SUBJECT]]", $title, $content);
 
         $content = str_replace("[[SUMMARY]]", $templatedata['summary'], $content);
         $content = str_replace("[[CREATOR]]", $templatedata['creator_name'], $content);
@@ -345,8 +356,8 @@ class MailInviteHandler {
             // ORGANIZER;RSVP=TRUE;PARTSTAT=ACCEPTED;ROLE=CHAIR;SENT-BY="mailto:c@c.cz"
             // :mailto:c@c.cz
 
-        }
 
+        }
 
         $vevent->ClearProperties(array( 'ATTENDEE' => true ));
 //        foreach($attendees as $at){
@@ -357,7 +368,7 @@ class MailInviteHandler {
         // url
         //$event->AddProperty("URL", "http://127.0.0.1/public.php?XDEBUG_SESSION_START=14830");
 
-
+        $event->AddProperty("ORGANIZER", 'mailto:'. $organizer->email, $organizerproperty);
 
 //        $organizerproperty = null;
 //        if(isset($organizer->params) && $organizer->params != null) {
@@ -376,7 +387,6 @@ class MailInviteHandler {
             $attendeePropertyArray = $this->extractParametersToArrayFromProperty($attendee->params);
             // add partstat from DB
             $attendeePropertyArray['PARTSTAT'] = $partstat;
-
             $vevent->AddProperty("ATTENDEE", $attendee->email, $attendeePropertyArray );
 
             echo 'attende\n';
