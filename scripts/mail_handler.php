@@ -80,8 +80,10 @@ class MailInviteHandler {
                 . 'dtend, summary, uid, email_status,' // .'collection.collection_id,'
                 // extra parameters
                 . ' location, transp, url, priority, class, calendar_item.description as description, calendar_attendee.partstat as partstat'
+                . ', caldav_data.caldav_data as caldav_data'
                 . ' FROM calendar_item'
                 . ' INNER JOIN calendar_attendee ON calendar_item.dav_id = calendar_attendee.dav_id'
+                . ' INNER JOIN caldav_data ON caldav_data.dav_id = calendar_attendee.dav_id'
                 //. ' INNER JOIN collection ON collection.user_no = calendar_item.user_no AND collection.is_calendar = TRUE'
                 // select calendar_items contained attendee who is remote, have email, and waiting for invitation (email_status=2)
                 . ' WHERE attendee LIKE \'mailto:%\' AND is_remote=TRUE AND email_status IN ('
@@ -119,8 +121,9 @@ class MailInviteHandler {
             $creator = $attendees[0];
             array_shift($attendees);
 
-            $ctext = $this->renderRowToInvitation($row, $creator, $attendees);
+            //$ctext = $this->renderRowToInvitation($row, $creator, $attendees);
 
+            $ctext = $row->caldav_data;
 
             $invitation = 'Invitation';
             // waiting mail already sent
