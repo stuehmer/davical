@@ -356,7 +356,7 @@ class MailInviteHandler {
         //$event->AddProperty("URL", "http://127.0.0.1/public.php?XDEBUG_SESSION_START=14830");
 
 
-        $event->AddProperty("ORGANIZER", 'mailto:'. $organizer->email, $organizerproperty);
+        $vevent->AddProperty("ORGANIZER", 'mailto:'. $organizer->email, $organizer->property);
 
 //        $organizerproperty = null;
 //        if(isset($organizer->params) && $organizer->params != null) {
