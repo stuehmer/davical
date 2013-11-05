@@ -168,7 +168,6 @@ class MailInviteHandler {
             );
 
             $sent = $this->sendInvitationEmail($currentAttendee, $creator, $ctext, $templatedata);
-
             global $options;
             print_r($options['save-sent-invitation']);
             if($sent && (!array_key_exists('save-sent-invitation', $options) || $options['save-sent-invitation'] == 'true')){
@@ -289,6 +288,7 @@ class MailInviteHandler {
         $content = str_replace("[[EMAIL]]", $templatedata['creator_email'], $content);
         $content = str_replace("[[DTSTART]]", $templatedata['dtstart'], $content);
         $content = str_replace("[[DTEND]]", $templatedata['dtend'], $content);
+
 
         if($templatedata['location'] != '') {
             $templatedata['location'] = 'Location : ' . $templatedata['location'];
