@@ -134,10 +134,6 @@ class MailInviteHandler {
                     $attendees[] = $rowattendee;
                     $first = false;
                 }
-
-
-
-
             }
 
 
@@ -337,7 +333,6 @@ class MailInviteHandler {
 
         $vevent = $calendar->GetComponents('VEVENT')[0];
 
-
         $replyTo = $this->headersAddReplyTo(false);
         if($replyTo != ''){
             $creator = $vevent->GetProperty('ORGANIZER');
@@ -359,6 +354,7 @@ class MailInviteHandler {
 
         // url
         //$event->AddProperty("URL", "http://127.0.0.1/public.php?XDEBUG_SESSION_START=14830");
+
 
         $event->AddProperty("ORGANIZER", 'mailto:'. $organizer->email, $organizerproperty);
 
@@ -393,6 +389,7 @@ class MailInviteHandler {
             echo $result;
         }
 
+        echo $result;
 
         return $result;
     }
