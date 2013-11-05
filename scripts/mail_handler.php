@@ -8,7 +8,12 @@ error_reporting(E_ALL);
 $_SERVER['SERVER_NAME'] = 'what_happend_when_server_name_is_a_buch_of_words';
 require_once('../htdocs/always.php');
 
-
+/**
+ * Example setting :
+ * $c->MailHandler = array();
+ * $c->MailHandler['template'] = true;
+ * $c->MailHandler['Reply-To'] = 'invitation_email_handler@example.com';
+ */
 
 require_once('AwlQuery.php');
 require_once('vCalendar.php');
@@ -209,7 +214,6 @@ class MailInviteHandler {
         $headers .= "Content-Transfer-Encoding: 7bit";
 
 
-        echo "HEADER>>\n" . $headers . "\n<<<";
 
         $attendeeWithoutMailTo = explode('mailto:', $attendee);
         if(count($attendeeWithoutMailTo) > 1){
@@ -329,9 +333,7 @@ class MailInviteHandler {
 
             $creator->SetParameterValue('SENT-BY', $creator->Value());
             // doesnt matter rest of setting google send answer of invitation to this address...
-            echo "\n\n|" . $creator->Value() . "|";
             $creator->Value('mailto:'. $replyTo);
-            echo "\n\n|" . $creator->Value() . "|";
             // ORGANIZER;RSVP=TRUE;PARTSTAT=ACCEPTED;ROLE=CHAIR;SENT-BY="mailto:c@c.cz"
             // :mailto:c@c.cz
 
