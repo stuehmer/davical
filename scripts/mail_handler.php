@@ -115,10 +115,13 @@ class MailInviteHandler {
             $first = true;
 
             while(($rowattendee = $qryattendee->Fetch())){
-                if($first && $currentAttendee == $rowattendee->email){
+                if($first || $currentAttendee == $rowattendee->email){
                     $attendees[] = $rowattendee;
-                    break;
+                    $first = false;
                 }
+
+
+
 
             }
 
@@ -176,14 +179,21 @@ class MailInviteHandler {
     }
 
 
-    private function headersAddReplyTo(){
+    private function headersAddReplyTo($addParam = true){
         global $c;
-
+        $result = '';
         if(array_key_exists('Reply-To', $c->MailHandler)){
-            return 'Reply-To: ' . $c->MailHandler['Reply-To'] . " \r\n";
+            if($addParam){
+                $result .= 'Reply-To: ';
+            }
+            $result .= $c->MailHandler['Reply-To'];
+            if($addParam) {
+                $result .= " \r\n";
+            }
+
         }
 
-        return '';
+        return $result;
     }
 
     private function sendInvitationEmailNoTemplate($attendee, $creator, $renderInvitation, $title){
@@ -278,7 +288,7 @@ class MailInviteHandler {
 
         echo "\nattendee:${attendee}]\n";
         echo "\nheaders:${headers}]\n";
-        //$result = mail($attendee, $title, $content, $headers);
+        $result = mail($attendee, $title, $content, $headers);
 //            if($result){
 //              return true;
 //            }
@@ -312,7 +322,22 @@ class MailInviteHandler {
 
         $vevent = $calendar->GetComponents('VEVENT')[0];
 
-        //$attendees = $vevent->GetProperties('ATTENDEE');
+
+        $replyTo = $this->headersAddReplyTo(false);
+        if($replyTo != ''){
+            $creator = $vevent->GetProperty('ORGANIZER');
+
+            $creator->SetParameterValue('SENT-BY', $creator->Value());
+            // doesnt matter rest of setting google send answer of invitation to this address...
+            echo "\n\n|" . $creator->Value() . "|";
+            $creator->Value('mailto:'. $replyTo);
+            echo "\n\n|" . $creator->Value() . "|";
+            // ORGANIZER;RSVP=TRUE;PARTSTAT=ACCEPTED;ROLE=CHAIR;SENT-BY="mailto:c@c.cz"
+            // :mailto:c@c.cz
+
+        }
+
+
         $vevent->ClearProperties(array( 'ATTENDEE' => true ));
 //        foreach($attendees as $at){
 //            echo "value:" . $at->Value() . "\n";
