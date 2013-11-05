@@ -158,17 +158,17 @@ class MailInviteHandler {
                 'dtend' => date("d/m/y H:i", $dtend),
                 'creator_name' => $creator->params,
                 'creator_email' => $creator->email,
-                'invitation' => $invitation
-
+                'invitation' => $invitation,
+                'location' => $row->location
             );
 
 
 
             $sent = $this->sendInvitationEmail($currentAttendee, $creator, $ctext, $templatedata);
 
-//            if($sent){
-//                $this->changeRemoteAttendeeStatrusTo($currentAttendee, $currentDavID, $new_status);
-//            }
+            if($sent){
+                $this->changeRemoteAttendeeStatrusTo($currentAttendee, $currentDavID, $new_status);
+            }
         }
 
     }
@@ -223,11 +223,11 @@ class MailInviteHandler {
 
 
         $result = mail($attendee, $title, $renderInvitation, $headers);
-//            if($result){
-//              return true;
-//            }
+        if($result){
+          return true;
+        }
 
-        return true;
+        return false;
     }
 
 
@@ -287,17 +287,23 @@ class MailInviteHandler {
         $content = str_replace("[[EMAIL]]", $templatedata['creator_email'], $content);
         $content = str_replace("[[DTSTART]]", $templatedata['dtstart'], $content);
         $content = str_replace("[[DTEND]]", $templatedata['dtend'], $content);
-        //$content = str_replace("[[LOCATION]]", $templatedata['location'], $content);
+
+
+        if($templatedata['location'] != '') {
+            $templatedata['location'] = 'Location : ' . $templatedata['location'];
+        }
+
+        $content = str_replace("[[LOCATION]]", $templatedata['location'], $content);
 
 
         echo "\nattendee:${attendee}]\n";
         echo "\nheaders:${headers}]\n";
         $result = mail($attendee, $title, $content, $headers);
-//            if($result){
-//              return true;
-//            }
+        if($result){
+          return true;
+        }
 
-        return true;
+        return false;
     }
 
     /**
