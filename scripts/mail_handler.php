@@ -111,8 +111,15 @@ class MailInviteHandler {
             $qryattendee->Exec('attendees');
 
             $attendees = array();
+
+            $first = true;
+
             while(($rowattendee = $qryattendee->Fetch())){
-                $attendees[] = $rowattendee;
+                if($first && $currentAttendee == $rowattendee->email){
+                    $attendees[] = $rowattendee;
+                    break;
+                }
+
             }
 
 
@@ -121,9 +128,9 @@ class MailInviteHandler {
             $creator = $attendees[0];
             array_shift($attendees);
 
-            //$ctext = $this->renderRowToInvitation($row, $creator, $attendees);
+            $ctext = $this->renderRowToInvitation($row->caldav_data, $creator, $attendees);
 
-            $ctext = $row->caldav_data;
+            //$ctext = $row->caldav_data;
 
             $invitation = 'Invitation';
             // waiting mail already sent
@@ -143,7 +150,6 @@ class MailInviteHandler {
                 'dtend' => date("d/m/y H:i", $dtend),
                 'creator_name' => $creator->params,
                 'creator_email' => $creator->email,
-                'location' => $creator->location,
                 'invitation' => $invitation
 
             );
@@ -267,12 +273,12 @@ class MailInviteHandler {
         $content = str_replace("[[EMAIL]]", $templatedata['creator_email'], $content);
         $content = str_replace("[[DTSTART]]", $templatedata['dtstart'], $content);
         $content = str_replace("[[DTEND]]", $templatedata['dtend'], $content);
-        $content = str_replace("[[LOCATION]]", $templatedata['location'], $content);
+        //$content = str_replace("[[LOCATION]]", $templatedata['location'], $content);
 
 
         echo "\nattendee:${attendee}]\n";
         echo "\nheaders:${headers}]\n";
-        $result = mail($attendee, $title, $content, $headers);
+        //$result = mail($attendee, $title, $content, $headers);
 //            if($result){
 //              return true;
 //            }
@@ -296,42 +302,38 @@ class MailInviteHandler {
      * @param $attendees - array of arrays with attendees (attendee, property)
      * @return string
      */
-    private function renderRowToInvitation($row, $organizer, $attendees){
+    private function renderRowToInvitation($caldav_data, $organizer, $attendees){
 
         $status='TENTATIVE';
 
-        $calendar = new vCalendar();
+        $calendar = new vCalendar($caldav_data);
         $calendar->AddProperty("METHOD", "REQUEST");
 
 
-        $event = new vComponent();
-        $event->SetType("VEVENT");
+        $vevent = $calendar->GetComponents('VEVENT')[0];
 
-
-
-        $event->AddProperty("SUMMARY", $row->summary);
-        $event->AddProperty("DTSTAMP", $row->dtstamp);
-        $event->AddProperty("DTSTART", $row->dtstart);
-        $event->AddProperty("DTEND", $row->dtend);
-        $event->AddProperty("UID", $row->uid);
-
-
-        $event->AddProperty("LOCATION", $organizer->location);
+        //$attendees = $vevent->GetProperties('ATTENDEE');
+        $vevent->ClearProperties(array( 'ATTENDEE' => true ));
+//        foreach($attendees as $at){
+//            echo "value:" . $at->Value() . "\n";
+//            $vevent->RemovePropertie($at);
+//        }
 
         // url
         //$event->AddProperty("URL", "http://127.0.0.1/public.php?XDEBUG_SESSION_START=14830");
 
 
 
-        $organizerproperty = null;
-        if(isset($organizer->params) && $organizer->params != null) {
-            $organizerproperty = array( 'CN' => $organizer->params);
-        }
-
-        $event->AddProperty("ORGANIZER", 'mailto:'. $organizer->email, $organizerproperty);
-
-        $event->AddProperty("STATUS", $status);
-
+//        $organizerproperty = null;
+//        if(isset($organizer->params) && $organizer->params != null) {
+//            $organizerproperty = array( 'CN' => $organizer->params);
+//        }
+//
+//        $event->AddProperty("ORGANIZER", 'mailto:'. $organizer->email, $organizerproperty);
+//
+//        $event->AddProperty("STATUS", $status);
+//
+//
 
         foreach($attendees as $attendee){
             $partstat = $attendee->partstat;
@@ -340,14 +342,17 @@ class MailInviteHandler {
             // add partstat from DB
             $attendeePropertyArray['PARTSTAT'] = $partstat;
 
-            $event->AddProperty("ATTENDEE", $attendee->email, $attendeePropertyArray );
+            $vevent->AddProperty("ATTENDEE", $attendee->email, $attendeePropertyArray );
+
+            echo 'attende\n';
         }
 
 
-        $calendar->AddComponent($event);
+        //$calendar->AddComponent($event);
 
         $result = $calendar->render();
 
+        echo $result;
 
         return $result;
     }
