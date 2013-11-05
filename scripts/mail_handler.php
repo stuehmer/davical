@@ -216,7 +216,7 @@ class MailInviteHandler {
         $headers .= "\r\n";
         $headers .= "Content-Transfer-Encoding: 7bit";
 
-        $attendeeWithoutMailTo = explode('mailto:', $attendee);
+       $attendeeWithoutMailTo = explode('mailto:', $attendee);
         if(count($attendeeWithoutMailTo) > 1){
             $attendee = $attendeeWithoutMailTo[1];
         }
