@@ -2,10 +2,21 @@
 ini_set('display_errors', 'On');
 error_reporting(E_ALL);
 
+
+$options = options($argv);
+
+
+
+if(!array_key_exists('SERVER_NAME', $options) || $options['SERVER_NAME'] == ''){
+    $options['SERVER_NAME'] = php_uname("n");
+}
+
+echo 'SERVER_NAME: ' . $options['SERVER_NAME'] . "\n";
+
 // for config and awl library -
 // used to solved by ../htdocs/always.php
 // Notice: Undefined index: SERVER_NAME in /home/milan/projects/davical/htdocs/always.php on line 138
-$_SERVER['SERVER_NAME'] = 'what_happend_when_server_name_is_a_buch_of_words';
+$_SERVER['SERVER_NAME'] = $options['SERVER_NAME'];
 require_once('../htdocs/always.php');
 
 /**
@@ -166,7 +177,10 @@ class MailInviteHandler {
 
             $sent = $this->sendInvitationEmail($currentAttendee, $creator, $ctext, $templatedata);
 
-            if($sent){
+
+            global $options;
+            print_r($options['save-sent-invitation']);
+            if($sent && (!array_key_exists('save-sent-invitation', $options) || $options['save-sent-invitation'] == 'true')){
                 $this->changeRemoteAttendeeStatrusTo($currentAttendee, $currentDavID, $new_status);
             }
         }
@@ -384,8 +398,11 @@ class MailInviteHandler {
         //$calendar->AddComponent($event);
 
         $result = $calendar->render();
+        global $c;
+        if(array_key_exists('icalendar', $c->dbg) && $c->dbg['icalendar']){
+            echo $result;
+        }
 
-        echo $result;
 
         return $result;
     }
@@ -552,7 +569,7 @@ class MailInviteHandler {
 }
 
 
-$options = options($argv);
+
 //var_dump($options);
 
 // default config setting for MailHandler
@@ -560,6 +577,22 @@ if(!property_exists($c, 'MailHandler')){
     echo 'default property MailHandler in $c...\n';
     $c->MailHandler = array();
 }
+
+
+/**
+ * HELP :
+ *          --fmail=path - read file with attendee email as vCalendar
+ *
+ *          --stdin - read stdin with attendee email as vCalendar
+ *
+ *          --invite-all - send invitation all remote attendee
+ *
+ *          --SERVER_NAME=example.org - name of server which is runing this script
+ *                                    - important when you have more instacies of DAViCal in one server
+ *                                    - and you have config.php separate for each server like config-example.org.php
+ *
+ *          --save-sent-invitation=false/true - default true, after send invitation is stored in db and no send more
+ */
 
 if(count($options) > 0){
     $mailHandler = new MailInviteHandler();
