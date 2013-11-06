@@ -39,7 +39,6 @@ handle reply of invitation
     - default true, after send invitation is changed status in db and no send again
     - good for debug
 
-
 ### config
 
 the config file is the same like for **DAViCal**
