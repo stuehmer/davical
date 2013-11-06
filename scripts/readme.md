@@ -10,26 +10,35 @@ can be handled by cron.
 
 ### run
 
+simple
+
 `php mail_handler.php`
+
+sent invitation or update of mail
+
+`php mail_handler.php --invite-all`
+
+handle reply of invitation
+
+`cat /var/mails/email_with_example_reply_of_invitation.eml | php mail_handler.php --stdin`
+`php mail_handler.php --file=/var/mails/email_with_example_reply_of_invitation.eml`
 
 ### params
 
-*       --fmail=path
-        - read file with attendee email as vCalendar
+*   --fmail=path
+    - read file with attendee email as vCalendar
+*   --stdin
+    - read stdin with attendee email as vCalendar
+*   --invite-all
+    - send invitation all remote attendee
+*   --SERVER_NAME=example.org
+    - name of server which is runing this script
+    - important when you have more instacies of DAViCal in one server
+    - and you have config.php separate for each server like config-example.org.php
+*   --save-sent-invitation=false/true
+    - default true, after send invitation is changed status in db and no send again
+    - good for debug
 
-*       --stdin
-        - read stdin with attendee email as vCalendar
-
-*       --invite-all
-        - send invitation all remote attendee
-
-*       --SERVER_NAME=example.org
-        - name of server which is runing this script
-        - important when you have more instacies of DAViCal in one server
-        - and you have config.php separate for each server like config-example.org.php
-
-*       --save-sent-invitation=false/true
-        - default true, after send invitation is stored in db and no send more
 
 
 ### config
