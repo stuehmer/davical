@@ -3,7 +3,6 @@ ini_set('display_errors', 'On');
 error_reporting(E_ALL);
 
 
-
 $options = options($argv);
 
 
@@ -389,7 +388,6 @@ class MailInviteHandler {
             echo $result;
         }
 
-        echo $result;
 
         return $result;
     }
