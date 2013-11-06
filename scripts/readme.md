@@ -40,7 +40,6 @@ handle reply of invitation
     - good for debug
 
 
-
 ### config
 
 the config file is the same like for **DAViCal**
