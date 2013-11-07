@@ -564,7 +564,7 @@ function do_scheduling_requests( vCalendar $resource, $create, $old_data = null,
 
     $response = '3.7';  // Attendee was not found on server.
     dbg_error_log( 'PUT', 'Handling scheduling resources for %s on %s which is %s', $email,
-                     ($create?'create':'update'), ($Fattendee_is_new? 'new' : 'an update') );
+                     ($create?'create':'update'), ($attendee_is_new? 'new' : 'an update') );
     if ( $schedule_target->Exists() ) {
       // Instead of always writing to schedule-default-calendar, we first try to
       // find a calendar with an existing instance of the event.
@@ -1173,6 +1173,7 @@ function write_alarms( $dav_id, vComponent $ical ) {
   }
 }
 
+
 /**
  * Parse out the attendee property and write a row to the
  * calendar_attendee table for each one.
@@ -1288,6 +1289,11 @@ function write_new_or_update_attendees( $dav_id, $attendees, $add_new = true ) {
   $qry->Prepare();
   $processed = array();
   foreach( $attendees AS $v ) {
+
+    if($v != null){
+        continue;
+    }
+
     $attendee = $v->Value();
 
 

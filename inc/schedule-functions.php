@@ -385,7 +385,9 @@ EOTEMPLATE;
     }
   }
   $mime->addPart( $friendly_part, 'text/plain' );
-  
+
+    require_once('EMail.php');
+
   $email = new EMail();
   $email->SetFrom($request->principal->email());
   $email->AddTo($to_email);
