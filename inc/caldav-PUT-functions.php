@@ -1296,9 +1296,6 @@ function write_new_or_update_attendees( $dav_id, $attendees, $add_new = true ) {
   $processed = array();
   foreach( $attendees AS $v ) {
 
-    if($v != null){
-        continue;
-    }
 
     $attendee = $v->Value();
 
