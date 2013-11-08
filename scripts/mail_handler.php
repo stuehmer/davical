@@ -417,7 +417,7 @@ class MailInviteHandler {
             // after symbol ":" -> value what we are not interest
             $superProp = $attendeeproperty;
 
-            if(count($superProp) > 0){
+            if(is_array($superProp) && count($superProp) > 0){
                 $superProp = $superProp[0];
             } else {
                 $superProp = &$attendeeproperty;
@@ -538,7 +538,7 @@ class MailInviteHandler {
 
         $attendeeName = "ATTENDEE";
 
-        $vResource->ClearProperties($attendeeName);
+        $event->ClearProperties($attendeeName);
 
         $davIdArray = array(':dav_id' => $dav_id);
 
@@ -548,7 +548,10 @@ class MailInviteHandler {
 
 
         while(($arow = $attendeeQry->Fetch())){
-            $attendeeParameters = $arow->params;
+
+            $arowparams = $arow->params;
+            $attendeeParameters = $this->extractParametersToArrayFromProperty($arowparams);
+
             $attendeeValue = $arow->attendee;
             // separe value
             $event->AddProperty($attendeeName, $attendeeValue, $attendeeParameters);
