@@ -438,7 +438,9 @@ function do_scheduling_reply( vCalendar $resource, vProperty $organizer ) {
     // Attendee was not found on server.
     // *please NOTE:
     // but we can pretend the attendee is not a principal but a remote-attendee
-    $response = '2.0;Success';
+    // EDIT: can't be 2.0;Success because going to be a parameter in
+    // iCal and the parameters are separed by ; (semi-colon)
+    $response='2.0';
     if ( $schedule_target->Exists() ) {
       // Instead of always writing to schedule-default-calendar, we first try to
       // find a calendar with an existing instance of the event in any calendar of this attendee.
@@ -614,7 +616,9 @@ function do_scheduling_requests( vCalendar $resource, $create, $old_data = null,
         $answer = $remote->sendRequest ( $email, 'VEVENT/REQUEST', $schedule_request->Render() );
 
         // change response for remote attendee
-        $response='2.0;Success';
+        // can't be 2.0;Success because going to be a parameter in
+        // iCal and the parameters are separed by ; (semi-colon)
+        $response='2.0';
     }
     else {
       $remote = new iSchedule ();
@@ -1210,16 +1214,18 @@ function write_attendees( $dav_id, vCalendar $ical ) {
         $attendees_for_update = array();
         while(($row = $qry->Fetch())){
 
-            $idx = 0;
+
+
             // remove from attendess
-            foreach($attendees_for_add as $may_to_remove_attendee){
+            foreach($attendees_for_add as $idx => $may_to_remove_attendee){
                 $att = $may_to_remove_attendee->Value();
                 if($att == $row->attendee){
                     $attendees_for_update[] = $attendees_for_add[$idx];
                     unset($attendees_for_add[$idx]);
+
                     break;
                 }
-                $idx ++;
+
             }
         }
 
