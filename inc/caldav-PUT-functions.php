@@ -441,6 +441,7 @@ function do_scheduling_reply( vCalendar $resource, vProperty $organizer ) {
     // EDIT: can't be 2.0;Success because going to be a parameter in
     // iCal and the parameters are separed by ; (semi-colon)
     $response='2.0';
+
     if ( $schedule_target->Exists() ) {
       // Instead of always writing to schedule-default-calendar, we first try to
       // find a calendar with an existing instance of the event in any calendar of this attendee.
@@ -566,7 +567,7 @@ function do_scheduling_requests( vCalendar $resource, $create, $old_data = null,
 
     $response = '3.7';  // Attendee was not found on server.
     dbg_error_log( 'PUT', 'Handling scheduling resources for %s on %s which is %s', $email,
-                     ($create?'create':'update'), ($attendee_is_new? 'new' : 'an update') );
+                     ($create?'create':'update'), ($Fattendee_is_new? 'new' : 'an update') );
     if ( $schedule_target->Exists() ) {
       // Instead of always writing to schedule-default-calendar, we first try to
       // find a calendar with an existing instance of the event.

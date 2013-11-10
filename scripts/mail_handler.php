@@ -217,9 +217,7 @@ class MailInviteHandler {
 
     private function sendInvitationEmailNoTemplate($attendee, $creator, $renderInvitation, $title){
 
-
         $headers = sprintf("From: %s <%s>\r\n", $creator->params, $creator->email);
-
         $headers .= $this->headersAddReplyTo();
         $headers .= "MIME-Version: 1.0\r\n";
         $headers .= "Content-Type: text/calendar; method=REQUEST;\r\n";
@@ -346,10 +344,10 @@ class MailInviteHandler {
 
         $vevent = $calendar->GetComponents('VEVENT')[0];
 
-
         $replyTo = $this->headersAddReplyTo(false);
         if($replyTo != ''){
             $creator = $vevent->GetProperty('ORGANIZER');
+
 
             $creator->SetParameterValue('SENT-BY', $creator->Value());
             // doesnt matter rest of setting google send answer of invitation to this address...
