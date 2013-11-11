@@ -3,8 +3,8 @@ ini_set('display_errors', 'On');
 error_reporting(E_ALL);
 
 
-$options = options($argv);
-
+$options = getopt("h", Array('invite-all', 'stdin', 'fmail:', 'help', 'SERVER_NAME:'));
+var_dump($options);
 
 
 if(!array_key_exists('SERVER_NAME', $options) || $options['SERVER_NAME'] == ''){
@@ -30,57 +30,6 @@ require_once('vCalendar.php');
 require_once('../inc/PlancakeEmailParser.php');
 require_once('../inc/Consts.php');
 
-// inspired by :
-// http://php.net/manual/en/features.commandline.php
-function options ( $args )
-{
-    array_shift( $args );
-    $endofoptions = false;
-
-    $ret = array
-    (
-        'options' => array(),
-    );
-
-    while ( $arg = array_shift($args) )
-    {
-
-        // if we have reached end of options,
-        //we cast all remaining argvs as arguments
-        if ($endofoptions)
-        {
-            $ret['arguments'][] = $arg;
-            continue;
-        }
-
-        // Is it a command? (prefixed with --)
-        if ( substr( $arg, 0, 2 ) === '--' )
-        {
-
-            // is it the end of options flag?
-            if (!isset ($arg[3]))
-            {
-                $endofoptions = true;; // end of options;
-                continue;
-            }
-
-            $value = "";
-            $com   = substr( $arg, 2 );
-
-            // is it the syntax '--option=argument'?
-            if (strpos($com,'=')){
-                list($com, $value) = explode("=", $com, 2);
-            }
-
-            $ret['options'][$com] = !empty($value) ? $value : true;
-            continue;
-        }
-
-        continue;
-    }
-
-    return $ret['options'];
-}
 
 
 class MailInviteHandler {
