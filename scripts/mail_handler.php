@@ -3,7 +3,7 @@ ini_set('display_errors', 'On');
 error_reporting(E_ALL);
 
 
-$options = getopt("h", Array('invite-all', 'stdin', 'fmail:', 'help', 'SERVER_NAME:'));
+$options = getopt("h", Array('invite-all::', 'stdin', 'fmail:', 'help', 'SERVER_NAME:'));
 var_dump($options);
 
 
@@ -553,13 +553,13 @@ if(count($options) > 0){
         $file = fopen($options['fmail'], 'r');
         $mailHandler->handleIncomingMail(stream_get_contents($file));
         fclose($file);
-    } else if(isset($options['stdin']) && $options['stdin']) {
+    } else if(isset($options['stdin']) && $options['stdin'] == 'true' && $options['stdin'] == '1') {
         // or presed stdin flag eg: --stdin or --stdin=true
         $mailHandler->handleIncomingMail(stream_get_contents(STDIN));
     }
 
     // or presed stdin flag eg: --stdin or --stdin=true
-    if(isset($options['invite-all']) && $options['invite-all']){
+    if(isset($options['invite-all']) && $options['invite-all'] == 'true' && $options['invite-all'] == '1'){
         $mailHandler->sendInvitationToAll();
     }
 
