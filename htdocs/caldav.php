@@ -115,6 +115,8 @@ switch ( $request->method ) {
       include('caldav-POST.php');
       break;
     }
+        error_log('the value of add_member is : ', $add_member);
+        $add_member = true;
         // fall through if POST add member
   case 'PUT':
     switch( $request->content_type ) {

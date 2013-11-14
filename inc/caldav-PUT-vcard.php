@@ -125,7 +125,11 @@ else {
   $response_code = 201;
   $qry->QDo( $sql, $params );
   $put_action_type = 'INSERT';
-  
+  /*
+     * error_log(array (':user_no' => 1002, ':dav_name' => '/c/addresses/318d81ff-1d92-4437-85f8-cc8d29011a7e.vcf4ba218de-cf76-fb74-8d6b-3d2e686a27e3.vcf', ':etag' => 'a69320bb24e124c055072e73bba4faa3', ':dav_data' => 'BEGIN:VCARD\\r\\nVERSION:3.0\\r\\nPRODID:-//Apple Inc.//Mac OS X 10.9//EN\\r\\nN:asd;lkjljlj;;;\\r\\nFN:lkjljlj asd\\r\\nREV:2013-11-13T21:59:51Z\\r\\nUID:318d81ff-1d92-4437-85f8-cc8d29011a7e\\r\\nUID:4ba218de-cf76-fb74-8d6b-3d2e686a27e3\\r\\nEND:VCARD\\r\\n',
+     * ':session_user' => 1002, ':modified' => '2013-11-13T21:59:51Z', ':collection_id' => 1006)) /home/milan/projects/davical/inc/caldav-PUT-vcard.php:128
+     */
+  //error_log($params);
   $qry->QDo("SELECT currval('dav_id_seq') AS dav_id" );
 }
 $row = $qry->Fetch();
