@@ -17,7 +17,7 @@ $dav_resource->NeedPrivilege( array('urn:ietf:params:xml:ns:caldav:read-free-bus
 if ( $dav_resource->IsExternal() ) {
   require_once("external-fetch.php");
   update_external ( $dav_resource );
-}      
+}
 
 if ( ! $dav_resource->Exists() ) {
   $request->DoResponse( 404, translate("Resource Not Found.") );

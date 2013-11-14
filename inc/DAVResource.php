@@ -529,7 +529,7 @@ EOSQL;
         $this->tickets[] = new DAVTicket($this->collection->access_ticket_id);
       }
     }
-    
+
     $this->_is_collection = ( $this->_is_principal || $this->collection->dav_name == $this->dav_name || $this->collection->dav_name == $this->dav_name.'/' );
     if ( $this->_is_collection ) {
       $this->dav_name = $this->collection->dav_name;
