@@ -559,7 +559,7 @@ if(count($options) > 0){
     }
 
     // or presed stdin flag eg: --stdin or --stdin=true
-    if(isset($options['invite-all']) && $options['invite-all'] == 'true' && $options['invite-all'] == '1'){
+    if(isset($options['invite-all']) && ($options['invite-all'] == '' || $options['invite-all'] == 'true' || $options['invite-all'] == '1')){
         $mailHandler->sendInvitationToAll();
     }
 
