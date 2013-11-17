@@ -117,7 +117,11 @@ class MailInviteHandler {
 
             $sent = $this->sendInvitationEmail($currentAttendee, $creator, $ctext, $templatedata);
             global $options;
-            print_r($options['save-sent-invitation']);
+
+            if(array_key_exists('save-sent-invitation', $options)){
+                print_r($options['save-sent-invitation']);
+            }
+
             if($sent && (!array_key_exists('save-sent-invitation', $options) || $options['save-sent-invitation'] == 'true')){
                 $this->changeRemoteAttendeeStatrusTo($currentAttendee, $currentDavID, $new_status);
             }
@@ -539,7 +543,7 @@ if(count($options) > 0){
         $file = fopen($options['fmail'], 'r');
         $mailHandler->handleIncomingMail(stream_get_contents($file));
         fclose($file);
-    } else if(isset($options['stdin']) && $options['stdin'] == 'true' && $options['stdin'] == '1') {
+    } else if(isset($options['stdin']) && $options['stdin'] == 'true' || $options['stdin'] == '1') {
         // or presed stdin flag eg: --stdin or --stdin=true
         $mailHandler->handleIncomingMail(stream_get_contents(STDIN));
     }
