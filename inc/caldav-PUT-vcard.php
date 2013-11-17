@@ -88,16 +88,25 @@ if ( empty($last_modified) ) {
   $vcard->AddProperty('REV',$last_modified);
 }
 elseif ( stripos($last_modified, 'TZ') ) {
+    error_log('REV-1-------------------' . $last_modified . '--------------REV');
   // At least one of my examples has this crap.
   $last_modified = str_replace('TZ','T000000Z',$last_modified);
   $vcard->ClearProperties('REV');
   $vcard->AddProperty('REV',$last_modified);
 }
 elseif( preg_match('{^(\d{8})(\d{6})Z?}', $last_modified, $matches) ) {
+    error_log('REV0-------------------' . $last_modified . '--------------REV');
   $last_modified = $matches[1] . 'T' . $matches[2] . 'Z';
   $vcard->ClearProperties('REV');
   $vcard->AddProperty('REV',$last_modified);
+} elseif( preg_match('{([0-9]{4})-([0-9]{2})-([0-9]{2}T)([0-9]{2}):([0-9]{2}):([0-9]{2})Z?}', $last_modified, $matches) ){
+    error_log('REV1-------------------' . $last_modified . '--------------REV');
+    $last_modified = $matches[1] . $matches[2] .$matches[3]  .$matches[4] .$matches[5]. $matches[6] . 'Z';
+    $vcard->ClearProperties('REV');
+    $vcard->AddProperty('REV', $last_modified);
 }
+
+error_log('REV2-------------------' . $last_modified . '--------------REV');
 
 $rendered_card = $vcard->Render(); 
 $etag = md5($rendered_card);
