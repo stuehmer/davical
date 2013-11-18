@@ -91,7 +91,6 @@ class MailInviteHandler {
             array_shift($attendees);
 
             $ctext = $this->renderRowToInvitation($row->caldav_data, $creator, $attendees);
-
             //$ctext = $row->caldav_data;
             $invitation = 'Invitation';
             // waiting mail already sent
@@ -151,7 +150,6 @@ class MailInviteHandler {
             if($addParam) {
                 $result .= " \r\n";
             }
-
         }
 
         return $result;
@@ -247,7 +245,6 @@ class MailInviteHandler {
         }
 
         $content = str_replace("[[LOCATION]]", $templatedata['location'], $content);
-
         echo "\nattendee:${attendee}]\n";
         echo "\nheaders:${headers}]\n";
 
