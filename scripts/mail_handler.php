@@ -305,7 +305,7 @@ class MailInviteHandler {
         //$event->AddProperty("URL", "http://127.0.0.1/public.php?XDEBUG_SESSION_START=14830");
 
 
-        $vevent->AddProperty("ORGANIZER", 'mailto:'. $organizer->email, $organizer->property);
+        $vevent->AddProperty("ORGANIZER", 'mailto:'. $organizer->email, $organizer->params);
 
 //        $organizerproperty = null;
 //        if(isset($organizer->params) && $organizer->params != null) {
@@ -362,8 +362,9 @@ class MailInviteHandler {
             $propertyInArray = explode(';', $superProp);
 
             // first is name of property -> no params
-            if(count($propertyInArray) > 1){
-                array_shift($propertyInArray);
+            // EDIT: fist is not name of property (may was in old version of AWL)
+            if(count($propertyInArray) > 0){
+                //array_shift($propertyInArray);
 
                 $parameters = array();
                 foreach($propertyInArray as $property){
@@ -540,7 +541,7 @@ if(count($options) > 0){
         $file = fopen($options['fmail'], 'r');
         $mailHandler->handleIncomingMail(stream_get_contents($file));
         fclose($file);
-    } else if(isset($options['stdin']) && $options['stdin'] == 'true' || $options['stdin'] == '1') {
+    } else if(isset($options['stdin']) && ($options['stdin'] == '' || $options['stdin'] == 'true' || $options['stdin'] == '1')) {
         // or presed stdin flag eg: --stdin or --stdin=true
         $mailHandler->handleIncomingMail(stream_get_contents(STDIN));
     }
