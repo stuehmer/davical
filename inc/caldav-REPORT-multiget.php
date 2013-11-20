@@ -107,7 +107,15 @@ if ( $qry->Exec('REPORT',__LINE__,__FILE__) && $qry->rows() > 0 ) {
     if ( $bound_from != $collection->dav_name() ) {
       $dav_object->dav_name = str_replace( $bound_from, $collection->dav_name(), $dav_object->dav_name);
     }
-    //if ( $need_expansion ) {
+
+    // EDIT: uncomment "if ( $need_expansion ) {" because:
+    // 1. Create new contacts account
+    // 2. connect with emclient
+    // 3. create new contact
+    // 4. delete and recreate the account on emclient
+    //          Notice: Undefined variable: expand_range_start in /fs1/webadmin/davical/inc/caldav-REPORT-multiget.php on line 113
+    //          Notice: Undefined variable: expand_range_end in /fs1/webadmin/davical/inc/caldav-REPORT-multiget.php on line 113
+    if ( $need_expansion ) {
       $vResource = new vComponent($dav_object->caldav_data);
 
       $expanded = expand_event_instances($vResource, $expand_range_start, $expand_range_end);
@@ -131,7 +139,7 @@ if ( $qry->Exec('REPORT',__LINE__,__FILE__) && $qry->rows() > 0 ) {
 //      }
 
       $dav_object->caldav_data = $expanded->Render();
-    //}
+    }
     $responses[] = component_to_xml( $properties, $dav_object );
   }
 }
