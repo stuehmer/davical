@@ -1,10 +1,10 @@
 <?php
-ini_set('display_errors', 'On');
-error_reporting(E_ALL);
+//ini_set('display_errors', 'On');
+//error_reporting(E_ALL);
+error_reporting(E_ALL ^ E_NOTICE);
 
-
-$options = getopt("h", Array('invite-all::', 'stdin', 'fmail:', 'help', 'SERVER_NAME:'));
-var_dump($options);
+$options = getopt("h", Array('invite-all::', 'stdin', 'fmail:', 'help', 'SERVER_NAME:', 'save-sent-invitation:'));
+//var_dump($options);
 
 
 if(!array_key_exists('SERVER_NAME', $options) || $options['SERVER_NAME'] == ''){
@@ -35,7 +35,7 @@ require_once('../inc/Consts.php');
 class MailInviteHandler {
 
     public function __construct(){
-        dbg_error_log('MailHandler - construct');
+        //dbg_error_log('MailHandler - construct');
     }
 
     public function sendInvitationToAll(){
@@ -245,14 +245,15 @@ class MailInviteHandler {
         }
 
         $content = str_replace("[[LOCATION]]", $templatedata['location'], $content);
-        echo "\nattendee:${attendee}]\n";
-        echo "\nheaders:${headers}]\n";
-
+        //echo "\nattendee:${attendee}]\n";
+        //echo "\nheaders:${headers}]\n";
+        echo "Invitation ".$creator->email." -> ".$attendee." (".$templatedata['summary'].') ';
         $result = mail($attendee, $title, $content, $headers);
         if($result){
+            echo "OK\n";
           return true;
         }
-
+        echo "FAIL\n";
         return false;
     }
 
@@ -305,7 +306,7 @@ class MailInviteHandler {
         //$event->AddProperty("URL", "http://127.0.0.1/public.php?XDEBUG_SESSION_START=14830");
 
 
-        $vevent->AddProperty("ORGANIZER", 'mailto:'. $organizer->email, $organizer->params);
+        $vevent->AddProperty("ORGANIZER", 'mailto:'. $organizer->email);
 
 //        $organizerproperty = null;
 //        if(isset($organizer->params) && $organizer->params != null) {
@@ -326,17 +327,17 @@ class MailInviteHandler {
             $attendeePropertyArray['PARTSTAT'] = $partstat;
             $vevent->AddProperty("ATTENDEE", $attendee->email, $attendeePropertyArray );
 
-            echo 'attende\n';
+//            echo 'attende\n';
         }
 
 
         //$calendar->AddComponent($event);
 
         $result = $calendar->render();
-        global $c;
-        if(array_key_exists('icalendar', $c->dbg) && $c->dbg['icalendar']){
-            echo $result;
-        }
+        //global $c;
+        //if(array_key_exists('icalendar', $c->dbg) && $c->dbg['icalendar']){
+            //echo $result;
+        //}
 
 
         return $result;
@@ -399,10 +400,10 @@ class MailInviteHandler {
         $vcalendarBody = substr($body, $vcalendarStart, $vcalendarEnd - $vcalendarStart);
 
 
-        echo "subject: " . $pep->getSubject() . "\r\n";
-        echo "to:" . $pep->getTo()[0] . "\r\n";
-        echo "body: " . $body . "\r\n";
-        echo "vcalendarBody: " . $vcalendarBody . "\r\n";
+        //echo "subject: " . $pep->getSubject() . "\r\n";
+        //echo "to:" . $pep->getTo()[0] . "\r\n";
+        //echo "body: " . $body . "\r\n";
+        //echo "vcalendarBody: " . $vcalendarBody . "\r\n";
 
         $ical = new vCalendar($vcalendarBody);
         $this->handle_remote_attendee_reply($ical);
@@ -513,7 +514,7 @@ class MailInviteHandler {
 
 // default config setting for MailHandler
 if(!property_exists($c, 'MailHandler')){
-    echo 'default property MailHandler in $c...\n';
+    //echo 'default property MailHandler in $c...\n';
     $c->MailHandler = array();
 }
 
