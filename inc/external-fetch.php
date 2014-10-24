@@ -65,6 +65,7 @@ function fetch_external ( $bind_id, $min_age = '1 hour' )
     curl_setopt ( $curl, CURLOPT_TIMECONDITION, CURL_TIMECOND_IFMODSINCE );
     dbg_error_log("external", "checking external resource for remote changes " . $row->external_url );
     $ics = curl_exec ( $curl );
+    $info['filetime'] = isset($info['filetime']) && ($info['filetime'] > 0) ? $info['filetime'] : time();
     $info = curl_getinfo ( $curl );
     if ( $info['http_code'] === 304 || isset($info['filetime']) && new DateTime("@" . $info['filetime']) <=  $local_ts ) { 
       dbg_error_log("external", "external resource unchanged " . $info['filetime'] . '  < ' . $local_ts->getTimestamp() );
